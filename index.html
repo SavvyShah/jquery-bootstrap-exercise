@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Jquery-Bootstrap Exercise</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -77,6 +78,8 @@
     </div>
   </body>
   <script>
+    //global Switch Sort used to determined to sort ascending or descending
+    let switchSort = true
     // some seed data for the table
     let seedData = [
       {
@@ -94,8 +97,9 @@
     ]
 
     $(document).ready(function () {
-      //set cursor style
+      //set cursor style for table-head
       $('#table-head').css('cursor', 'pointer')
+
       //Prevent default submit behaviour and send it to handleSubmit
       $('#submit').on('click', function (e) {
         let form = e.target.form
@@ -106,6 +110,7 @@
           $('#favorite-celebrity').val('')
         }
       })
+
       //Setup event delegation for remove event
       $('#table-items').on('click', function (e) {
         // the remove button should be given classes accordingly as follows
@@ -113,10 +118,11 @@
           e.target.parentNode.parentNode.remove()
         }
       })
+
       //Setup event delegation for sort event
       $('#table-head').on('click', handleSort)
 
-      //Seed the table with seedData
+      //Seed the table with seedData constant
       ;(function () {
         seedData.forEach((el) => {
           $('#table-items').append(itemTemplate(el.celebrity, el.rating))
@@ -130,10 +136,12 @@
           return true
         } else return false
       }
+
       //handle form submit
       function handleSubmit(celebrityInput, ratingInput) {
         $('#table-items').append(itemTemplate(celebrityInput, ratingInput))
       }
+
       // sort the items based on column clicked. If Celebrity Column is clicked then sort by celebrity name
       function handleSort(e) {
         let elementsArray = $('#table-items')[0].childNodes
@@ -143,7 +151,6 @@
         })
         switch (e.target.id) {
           case 'celebrity-th':
-            console.log('hello celeb')
             SortedArray.sort((el1, el2) => {
               if (el1[0] > el2[0]) {
                 return 1
@@ -160,6 +167,13 @@
           default:
             console.log('Non sortable item')
         }
+        //if Global switchSort is changed then sort changes ascending-descending
+        if (switchSort) {
+          SortedArray.reverse()
+        }
+        //flip switchSort
+        switchSort = !switchSort
+
         //remove all the nodes from table
         $('#table-items').children().remove()
         //insert items according to the SortedArray
@@ -167,6 +181,7 @@
           $('#table-items').append(itemTemplate(element[0], element[1]))
         })
       }
+
       /*
       @function itemTemplate
       @param {string} celebrityInput- A name of a celebrity- Usually obtained from an input element
